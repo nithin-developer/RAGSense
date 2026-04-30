@@ -1,553 +1,341 @@
-# Adaptive RAG - Agentic AI Chatbot
+# RAGSense — Agentic AI Document Assistant
 
-[![Python 3.9+](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
+[![Python 3.12+](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Latest-green.svg)](https://fastapi.tiangolo.com/)
-[![LangGraph](https://img.shields.io/badge/LangGraph-0.5.4-orange.svg)](https://python.langchain.com/langgraph/)
-[![Qdrant](https://img.shields.io/badge/Qdrant-VectorDB-purple.svg)](https://qdrant.tech/)
+[![LangGraph](https://img.shields.io/badge/LangGraph-Latest-orange.svg)](https://python.langchain.com/langgraph/)
+[![NVIDIA NIM](https://img.shields.io/badge/NVIDIA_NIM-Mistral_3.5-76b900.svg)](https://build.nvidia.com/)
+[![FAISS](https://img.shields.io/badge/FAISS-VectorDB-blueviolet.svg)](https://github.com/facebookresearch/faiss)
 
-## 📋 Overview
+## Overview
 
-**Adaptive RAG** is an intelligent, end-to-end Retrieval-Augmented Generation (RAG) system powered by agentic AI architecture. It combines dynamic query routing, intelligent document retrieval, and advanced LLM capabilities to provide accurate, context-aware answers to user queries.
+**RAGSense** is an intelligent Retrieval-Augmented Generation system powered by agentic AI. It combines adaptive query routing, document retrieval, and LLM capabilities to provide accurate, context-aware answers.
 
-The system intelligently adapts its retrieval strategy based on query type, utilizing indexed documents, general knowledge, or real-time web search to generate comprehensive responses. Built with a modular architecture using LangGraph for workflow orchestration and multiple storage backends for scalability.
-
----
-
-## 🎯 Key Features
-
-### 🧠 Intelligent Query Routing
-- **Adaptive Classification**: Automatically routes queries to the most appropriate processing pipeline
-- **Three Query Types**:
-  - **Index**: Queries answerable from uploaded documents
-  - **General**: Queries answerable with general knowledge
-  - **Search**: Queries requiring real-time web search
-
-### 📚 Advanced RAG Pipeline
-- **Document Processing**: Intelligent chunking and embedding of documents
-- **Vector Search**: Fast similarity-based retrieval using Qdrant
-- **Relevance Grading**: Automatic evaluation of retrieved documents
-- **Query Rewriting**: Optimizes queries for better retrieval results
-
-### 🤖 Agentic AI Architecture
-- **Multi-Agent System**: Specialized agents for different tasks
-- **ReAct Framework**: Reasoning and Acting pattern for intelligent decision-making
-- **Tool Integration**: Seamless integration with retrieval tools and web search
-
-### 💾 State Management
-- **MongoDB Backend**: Persistent chat history and session management
-- **Session Tracking**: Individual conversation contexts per user
-- **Memory Management**: Full conversation context retention
-
-### 🎨 User Interface
-- **Streamlit Web App**: Interactive chat interface with document upload
-- **File Support**: PDF and TXT document uploads
-- **Real-time Feedback**: Live chat with instant responses
-
-### ⚡ API-First Architecture
-- **FastAPI Backend**: High-performance REST API
-- **Async Operations**: Non-blocking database and API calls
-- **RESTful Endpoints**: Well-defined API contracts
+The system classifies each query and routes it to the best pipeline — indexed documents, general knowledge, or real-time web search — using LangGraph for workflow orchestration and NVIDIA NIM as the LLM backend.
 
 ---
 
-## 🏗️ Architecture
+## Key Features
 
-### System Components
+### Intelligent Query Routing
+- **Adaptive Classification** — automatically routes queries to the most appropriate pipeline
+- **Three Query Types:**
+  - **Index** — answerable from uploaded documents
+  - **General** — answerable with common knowledge
+  - **Search** — requires real-time web search
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         User Interface                          │
-│  ┌──────────────��───────────────────────────────────────��───┐  │
-│  │  Streamlit Web Application                               │  │
-│  │  • Chat Interface                                        │  │
-│  │  • Document Upload (PDF, TXT)                            │  │
-│  │  • Session Management                                    │  │
-│  └──────────────────────────────────────────────────────────��  │
-└───────────────────────────────────────────��─────────────────────┘
-                            ↓
-┌────────────────────────────────────────────────��────────────────┐
-│                       FastAPI Backend                           │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │  REST API Endpoints                                      │  │
-│  │  • POST /rag/query                                       │  │
-│  │  • POST /rag/documents/upload                            │  │
-│  └──────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-                            ↓
-┌─────────────────────────────────────────────────────────────────┐
-│                    LangGraph Orchestration                      │
-│  ┌─────────┐  ┌──────────┐  ┌─────────┐  ┌──────────┐         │
-│  │ Query   │→ │ Classify │→ │ Router  │→ │ Pipeline │         │
-│  │ Analyze │  │ Query    │  │ Output  │  │ Exec     │         │
-│  └─────────┘  └──────────┘  └───��─────┘  └──────────┘         │
-└─────────────────────────────────────────────────────────────────┘
-                            ↓
-        ┌───────��──────────┬────────────────��─┬────────────────┐
-        ↓                  ↓                  ↓                ↓
-   ┌─────────┐       ┌──────────┐      ┌────────────┐   ┌──────────┐
-   │ Retriever│      │ General  │      │ Web Search │   │ Response │
-   │ (Index)  │      │ LLM      │      │ (Tavily)   │   │ Generator│
-   └─────────┘       └──────────┘      └────────────┘   └──────────┘
-        ↓                  ↓                  ↓                ↓
-        └──────────────────┬──────────────────┬────────────────┘
-                           ↓
-            ┌─────────────────────────────────┐
-            │   Response to User               │
-            └─────────────────────────────────┘
-```
+### Advanced RAG Pipeline
+- **Document Processing** — chunking and embedding via NVIDIA NV-EmbedQA
+- **Vector Search** — FAISS-based similarity retrieval with dynamic retriever
+- **Relevance Grading** — automatic evaluation of retrieved documents
+- **Query Rewriting** — optimises queries for better retrieval on retry
+
+### Agentic Architecture
+- **ReAct Framework** — Reasoning + Acting pattern for multi-step tool use
+- **Dynamic Retrieval** — new uploads are immediately searchable (no restart needed)
+- **Tool Integration** — retriever tools and Tavily web search
+
+### Auth & Session Management
+- **Built-in Auth** — JWT-based login/signup (no external auth service needed)
+- **MongoDB Backend** — persistent chat history and session tracking
+- **API Token Flow** — `/api/init` → `/api/create_user` → `/api/login`
+
+### User Interface
+- **Streamlit Web App** — dark-themed chat interface with document upload sidebar
+- **Loading States** — spinners for queries, uploads, login, and backend connection
+- **File Support** — PDF and TXT uploads
+
+---
+
+## Architecture
+
+![App Architecture](./App_Architecture.png) size: 800x600
+
 
 ### Graph Nodes
 
-1. **query_analysis**: Analyzes and classifies incoming queries
-2. **retriever**: Retrieves relevant documents from vector store
-3. **grade**: Evaluates relevance of retrieved documents
-4. **rewrite**: Optimizes query for better retrieval results
-5. **generate**: Generates final response from context
-6. **web_search**: Performs real-time web search when needed
-7. **general_llm**: Provides general knowledge answers
+| Node | Purpose |
+|------|---------|
+| `query_analysis` | Classifies query → `index`, `general`, or `search` |
+| `retriever` | Retrieves documents from FAISS via ReAct agent |
+| `grade` | Evaluates relevance of retrieved documents |
+| `rewrite` | Rewrites query for better retrieval on retry |
+| `generate` | Generates final answer from context |
+| `web_search` | Real-time web search via Tavily |
+| `general_llm` | General knowledge answers (no retrieval needed) |
 
 ---
 
-## 📦 Project Structure
+## Project Structure
 
 ```
-AdaptiveRag/
-├── src/                              # Main source code
-│   ��── main.py                       # FastAPI application entry point
-│   ├── api/                          # API routes and endpoints
-│   │   └── routes.py                 # RAG query and document upload endpoints
-│   ├── config/                       # Configuration management
-│   │   ├── settings.py               # Application settings
-│   │   └── prompts.yaml              # LLM prompts and system messages
-│   ├── core/                         # Core utilities
-│   │   ├── config.py                 # Core configuration
-│   │   └── logger.py                 # Logging setup
-│   ├── db/                           # Database layer
-│   │   └── mongo_client.py           # MongoDB client initialization
-│   ├── llms/                         # Language model integrations
-│   │   └── openai.py                 # OpenAI ChatGPT-4o initialization
-│   ├── memory/                       # Chat memory management
+Adaptive-Rag-main/
+├── app/                              # FastAPI backend
+│   ├── main.py                       # Application entry point
+│   ├── api/
+│   │   ├── auth.py                   # Auth routes (init, create_user, login)
+│   │   └── routes.py                 # RAG routes (query, upload)
+│   ├── config/
+│   │   ├── settings.py               # YAML config loader
+│   │   └── prompts.yaml              # LLM prompt templates
+│   ├── core/
+│   │   └── config.py                 # Environment settings
+│   ├── db/
+│   │   └── mongo_client.py           # MongoDB (Motor) client
+│   ├── llms/
+│   │   └── openai.py                 # NVIDIA NIM / Mistral-3.5-128B via OpenAI-compat API
+│   ├── memory/
 │   │   ├── chat_history_mongo.py     # MongoDB-backed chat history
-│   │   └── chathistory_in_memory.py  # In-memory chat history (fallback)
-│   ├── models/                       # Data models and schemas
-│   │   ├── state.py                  # Graph state definition
-│   │   ├── query_request.py          # Query request schema
+│   │   └── chathistory_in_memory.py  # In-memory fallback
+│   ├── models/
+│   │   ├── state.py                  # LangGraph state schema
+│   │   ├── query_request.py          # Query request model
 │   │   ├── grade.py                  # Relevance grade model
 │   │   ├── route_identifier.py       # Route classification model
 │   │   └── verification_result.py    # Answer verification model
-│   ├── rag/                          # RAG pipeline implementation
+│   ├── rag/
 │   │   ├── graph_builder.py          # LangGraph workflow construction
-│   │   ├── nodes.py                  # Graph node implementations
-│   │   ├── retriever_setup.py        # Vector store and retriever setup
-│   │   ├── document_upload.py        # Document processing and upload
-│   │   └── reAct_agent.py            # ReAct agent setup
-│   └── tools/                        # Utility tools and functions
-│       ├── common_tools.py           # Shared utility functions
-│       └── graph_tools.py            # Graph routing and decision tools
+│   │   ├── retriever_setup.py        # FAISS + NVIDIA embeddings + DynamicRetriever
+│   │   ├── document_upload.py        # PDF/TXT processing pipeline
+│   │   └── reAct_agent.py            # ReAct agent with string prompt template
+│   └── tools/
+│       ├── common_tools.py           # Description enhancement via LLM
+│       └── graph_tools.py            # Routing and grading decision tools
 │
-├── streamlit_app/                    # Streamlit web application
-│   ├── home.py                       # Authentication and login page
-│   ├── pages/                        # Multi-page application
-│   │   └── chat.py                   # Chat interface and document upload
-│   └── utils/                        # Streamlit utilities
-│       └── api_client.py             # Backend API client
+├── streamlit_app/                    # Streamlit frontend
+│   ├── home.py                       # Login / Signup page (tabbed)
+│   ├── pages/
+│   │   └── chat.py                   # Chat interface + document upload
+│   ├── utils/
+│   │   └── api_client.py             # Backend API client (single BASE_URL)
+│   └── .streamlit/
+│       └── config.toml               # Dark theme configuration
 │
-├── README.md                         # This file
+├── .env                              # Environment variables (not committed)
 ├── requirements.txt                  # Python dependencies
-├── CODE_STYLE_GUIDE.md               # Code formatting standards
-├── QUICK_REFERENCE.md                # Quick reference guide
-├── README_FORMATTING.md              # Formatting documentation
-├── VERIFICATION_CHECKLIST.md         # QA verification checklist
-├── FORMATTING_SUMMARY.md             # Summary of code formatting
-└── DOCUMENTATION_INDEX.md            # Documentation navigation index
+└── README.md                         # This file
 ```
 
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
-### Base URL
-```
-http://localhost:8000
-```
+### Auth Endpoints (prefix: `/api`)
 
-### 1. Query Endpoint
-**Process a RAG query and get intelligent response**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/init` | Generate an API token for the session |
+| `POST` | `/api/create_user` | Register a new user (requires `X-API-TOKEN` header) |
+| `POST` | `/api/login` | Authenticate and receive a JWT (requires `X-API-TOKEN` header) |
 
-```http
-POST /rag/query
-Content-Type: application/json
+### RAG Endpoints
 
-{
-  "query": "What is the main topic of the document?",
-  "session_id": "user_session_123"
-}
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/rag/query` | Process a RAG query |
+| `POST` | `/rag/documents/upload` | Upload a PDF/TXT document for indexing |
 
-**Response:**
-```json
-{
-  "result": {
-    "type": "ai",
-    "content": "Based on the document, the main topic is..."
-  }
-}
-```
+### Example Requests
 
-**Parameters:**
-- `query` (string, required): User's question or query
-- `session_id` (string, required): Unique session identifier for conversation tracking
-
-**Status Codes:**
-- `200`: Success
-- `400`: Invalid request format
-- `500`: Server error
-
----
-
-### 2. Document Upload Endpoint
-**Upload documents for RAG indexing**
-
-```http
-POST /rag/documents/upload
-X-Description: Brief description of the document
-
-Form Data:
-- file: <PDF or TXT file>
-```
-
-**Response:**
-```json
-{
-  "status": true
-}
-```
-
-**Headers:**
-- `X-Description` (string, required): Document description for context
-
-**Parameters:**
-- `file` (file, required): PDF or TXT file to upload (max size: depends on system)
-
-**Supported Formats:**
-- PDF (.pdf)
-- Plain Text (.txt)
-
-**Status Codes:**
-- `200`: Successfully uploaded and indexed
-- `400`: Invalid file type or missing description
-- `500`: Processing error
-
----
-
-## 📖 Usage Guide
-
-### 1. Prerequisites
-
+**Initialize session:**
 ```bash
-# System Requirements
-- Python 3.9 or higher
+curl -X POST http://localhost:8000/api/init
+# → {"api_token": "abc123..."}
+```
+
+**Create user:**
+```bash
+curl -X POST http://localhost:8000/api/create_user \
+  -H "X-API-TOKEN: abc123..." \
+  -H "Content-Type: application/json" \
+  -d '{"username": "john", "password": "secret123"}'
+```
+
+**Login:**
+```bash
+curl -X POST http://localhost:8000/api/login \
+  -H "X-API-TOKEN: abc123..." \
+  -H "Content-Type: application/json" \
+  -d '{"username": "john", "password": "secret123"}'
+# → {"jwt": "eyJhbG..."}
+```
+
+**Upload a document:**
+```bash
+curl -X POST http://localhost:8000/rag/documents/upload \
+  -H "X-Description: Medical diagnostic report" \
+  -F "file=@report.pdf"
+```
+
+**Query:**
+```bash
+curl -X POST http://localhost:8000/rag/query \
+  -H "Content-Type: application/json" \
+  -d '{"query": "What was the diagnosis?", "session_id": "user_jwt_token"}'
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.12+
 - MongoDB (local or cloud)
-- Qdrant vector database
-- OpenAI API key
-- Tavily API key (for web search)
-```
+- NVIDIA API key (from [build.nvidia.com](https://build.nvidia.com/))
+- Tavily API key (for web search — optional)
 
-### 2. Installation
+### Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/nithin-developer/RAGSense.git
-cd AdaptiveRag
+# Clone
+git clone https://github.com/nithin-developer/Adaptive-Rag.git
+cd Adaptive-Rag-main
 
 # Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python -m venv .venv
+.venv\Scripts\activate        # Windows
+# source .venv/bin/activate   # macOS/Linux
 
 # Install dependencies
 pip install -r requirements.txt
 ```
 
-### 3. Environment Configuration
+### Environment Configuration
 
 Create a `.env` file in the project root:
 
 ```env
-# OpenAI Configuration
-OPENAI_API_KEY=your_openai_api_key_here
+# NVIDIA NIM (LLM + Embeddings)
+NVIDIA_API_KEY=nvapi-your_nvidia_api_key_here
 
-# Tavily Search Configuration
-TAVILY_API_KEY=your_tavily_api_key_here
+# Tavily Search (optional — for web search queries)
+TAVILY_API_KEY=tvly-your_tavily_api_key_here
 
-# Qdrant Configuration
-QDRANT_URL=http://localhost:6333
-QDRANT_API_KEY=your_qdrant_api_key
-QDRANT_CODE_COLLECTION=code_documents
-QDRANT_DOCS_COLLECTION=documents
-
-# MongoDB Configuration
+# MongoDB
 MONGODB_URL=mongodb://localhost:27017
 MONGODB_DB_NAME=adaptive_rag
+
+# JWT (optional — auto-generated if not set)
+JWT_SECRET_KEY=your_long_random_secret_here
 ```
 
-### 4. Running the Application
+### Running the Application
 
-**Start FastAPI Backend:**
+**Terminal 1 — FastAPI backend:**
 ```bash
-# Terminal 1: Run FastAPI server
-python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-**Start Streamlit Frontend:**
+**Terminal 2 — Streamlit frontend:**
 ```bash
-# Terminal 2: Run Streamlit app
-streamlit run streamlit_app/home.py
+cd streamlit_app
+streamlit run home.py
 ```
 
-**Access the Application:**
-- Web Interface: http://localhost:8501
-- API Documentation: http://localhost:8000/docs
-- ReDoc Documentation: http://localhost:8000/redoc
+**Access:**
+- Web interface: http://localhost:8501
+- API docs: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
 
-### 5. Example Usage
+### Usage
 
-**Using the Web Interface:**
-1. Navigate to http://localhost:8501
-2. Create account or login
-3. Upload documents in the sidebar
-4. Start chatting in the main chat area
-
-**Using cURL:**
-```bash
-# Upload a document
-curl -X POST http://localhost:8000/rag/documents/upload \
-  -H "X-Description: Sample document about Python" \
-  -F "file=@document.pdf"
-
-# Query the RAG system
-curl -X POST http://localhost:8000/rag/query \
-  -H "Content-Type: application/json" \
-  -d '{
-    "query": "Tell me about Python",
-    "session_id": "user_123"
-  }'
-```
-
-**Using Python:**
-```python
-import requests
-
-# Query endpoint
-response = requests.post(
-    "http://localhost:8000/rag/query",
-    json={
-        "query": "What is Python?",
-        "session_id": "user_123"
-    }
-)
-print(response.json())
-```
+1. Open http://localhost:8501
+2. Create an account → Sign in
+3. Upload a document in the sidebar (PDF or TXT)
+4. Ask questions in the chat — the system automatically routes to the right pipeline
 
 ---
 
-## 🔧 Configuration
+## Configuration
 
-### Key Configuration Files
+### LLM & Embeddings
 
-#### `config/settings.py`
-```python
-# Core application settings loaded from environment
-OPENAI_API_KEY           # OpenAI API authentication
-TAVILY_API_KEY          # Web search functionality
-QDRANT_URL              # Vector database endpoint
-QDRANT_API_KEY          # Vector database authentication
-MONGODB_URL             # Chat history database
+| Component | Model | Provider |
+|-----------|-------|----------|
+| **Chat LLM** | `mistralai/mistral-medium-3.5-128b` | NVIDIA NIM (OpenAI-compatible) |
+| **Embeddings** | `nvidia/nv-embedqa-e5-v5` | NVIDIA NIM (asymmetric) |
+
+Configured in `app/llms/openai.py` and `app/rag/retriever_setup.py`.
+
+### Prompt Templates
+
+All LLM prompts are in `app/config/prompts.yaml`:
+
+| Prompt | Purpose |
+|--------|---------|
+| `system_prompt` | ReAct agent instructions |
+| `classify_prompt` | Query classification (index / general / search) |
+| `grading_prompt` | Document relevance scoring |
+| `rewrite_prompt` | Query optimisation for re-retrieval |
+| `generate_prompt` | Final answer generation |
+| `verify_prompt` | Hallucination check |
+
+### Query Routing
+
 ```
-
-#### `config/prompts.yaml`
-Contains system prompts for:
-- **system_prompt**: ReAct agent system instructions
-- **classify_prompt**: Query classification logic
-- **grading_prompt**: Document relevance evaluation
-- **rewrite_prompt**: Query optimization
-- **generate_prompt**: Response generation
-
-### Query Routing Logic
-
-The system routes queries based on classification:
-
-```
-Query Classification
-├── "index" → Use retriever (indexed documents)
-├── "general" → Use general LLM (common knowledge)
-└── "search" → Use web search (real-time information)
+Incoming Query
+    │
+    ▼
+query_analysis (classify)
+    │
+    ├── "index"   → retriever → grade → generate (or rewrite → retry)
+    ├── "general"  → general_llm → END
+    └── "search"   → web_search → generate → END
 ```
 
 ---
 
-## 🧪 Testing the API
+## Technology Stack
 
-### Using FastAPI Interactive Documentation
-
-1. Navigate to http://localhost:8000/docs
-2. Expand endpoint sections
-3. Click "Try it out"
-4. Enter test data
-5. Click "Execute"
-
-### Example Test Cases
-
-**Test 1: Simple Query**
-```json
-{
-  "query": "Hello, how are you?",
-  "session_id": "test_user_1"
-}
-```
-
-**Test 2: Document-Based Query**
-```json
-{
-  "query": "What topics are covered in the uploaded document?",
-  "session_id": "test_user_1"
-}
-```
-
-**Test 3: General Knowledge Query**
-```json
-{
-  "query": "What is machine learning?",
-  "session_id": "test_user_1"
-}
-```
+| Component | Technology |
+|-----------|-----------|
+| **LLM** | Mistral 3.5 128B via NVIDIA NIM |
+| **Embeddings** | NVIDIA NV-EmbedQA-E5-v5 |
+| **Orchestration** | LangGraph |
+| **Agent Framework** | LangChain (ReAct agent) |
+| **Vector Store** | FAISS (in-memory) |
+| **Web Framework** | FastAPI |
+| **Frontend** | Streamlit |
+| **Chat History** | MongoDB (Motor async driver) |
+| **Auth** | JWT (python-jose) + SHA-256 password hashing (passlib) |
+| **Web Search** | Tavily |
+| **ASGI Server** | Uvicorn |
 
 ---
 
-## 🔐 Security Considerations
+## Security Notes
 
-- Store API keys in `.env` file (never commit)
-- Use environment variables for sensitive data
-- Implement rate limiting for production
-- Validate all user inputs
-- Use HTTPS in production
-- Implement authentication/authorization
-- Secure MongoDB with proper credentials
+- API keys stored in `.env` (never committed — listed in `.gitignore`)
+- Passwords hashed with SHA-256 via passlib
+- JWT tokens with configurable expiry (default 24h)
+- API token validation on auth endpoints
+- Add HTTPS and rate limiting for production deployments
 
 ---
 
-## 🚀 Deployment
+## FAQ
 
-### Local Development
-```bash
-# Run development server with auto-reload
-python -m uvicorn src.main:app --reload
-```
+**Q: Can I use a different LLM provider?**
+A: Yes. Edit `app/llms/openai.py` — since it uses `ChatOpenAI`, any OpenAI-compatible endpoint works (OpenAI, Groq, Together, etc.).
 
-### Production Deployment
-```bash
-# Run with production settings
-python -m uvicorn src.main:app --host 0.0.0.0 --port 8000 --workers 4
-```
+**Q: Do I need the NVIDIA API key for both LLM and embeddings?**
+A: Yes. The same `NVIDIA_API_KEY` is used for both the chat model and the embedding model via NVIDIA NIM.
 
-### Docker Support (Optional)
-Create `Dockerfile` and `docker-compose.yml` for containerized deployment.
+**Q: How is conversation history stored?**
+A: MongoDB stores all messages with session IDs. Each JWT token maps to a unique conversation.
 
----
+**Q: Can I run without web search?**
+A: Yes. If `TAVILY_API_KEY` is not set, queries classified as "search" will attempt to search but may fail gracefully.
 
-## 📊 Performance Optimization
-
-- **Document Chunking**: Configurable chunk size (1000 chars, 150 overlap)
-- **Vector Search**: Efficient similarity search with Qdrant
-- **Async Operations**: Non-blocking I/O for better throughput
-- **Caching**: Query results cached when applicable
-- **Batch Processing**: Document processing in batches
+**Q: What happens if I upload a new document?**
+A: The `DynamicRetriever` automatically picks up new documents without restarting the server.
 
 ---
 
-## 🤝 Contributing
+## License
 
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/YourFeature`)
-3. Make changes following CODE_STYLE_GUIDE.md
-4. Commit with descriptive messages (`git commit -m 'feat: Add YourFeature'`)
-5. Push to your branch (`git push origin feature/YourFeature`)
-6. Open a Pull Request
-
-### Code Quality
-- Follow PEP 8 standards
-- Add docstrings to all functions
-- Write unit tests for new features
-- Update documentation
-- Run linting: `flake8 src/`
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 📚 Technology Stack
-
-| Component | Technology | Version |
-|-----------|-----------|---------|
-| **LLM Framework** | LangChain | ~0.3.27 |
-| **Workflow Orchestration** | LangGraph | ~0.5.4 |
-| **Web Framework** | FastAPI | Latest |
-| **ASGI Server** | Uvicorn | Latest |
-| **UI Framework** | Streamlit | Latest |
-| **Vector Database** | Qdrant/FAISS | Latest |
-| **Chat Database** | MongoDB/InMemory | Latest |
-| **Document Processing** | LangChain Community | ~0.3.27 |
-| **LLM Provider** | OpenAI | ~0.3.28 |
-| **Web Search** | Tavily | Latest |
-| **Async DB** | Motor | Latest |
-| **Data Validation** | Pydantic | ~2.11.7 |
-
----
-
-## 📝 Documentation References
-
-- [CODE_STYLE_GUIDE.md](CODE_STYLE_GUIDE.md) - Comprehensive coding standards
-- [QUICK_REFERENCE.md](QUICK_REFERENCE.md) - Quick patterns and templates
-- [README_FORMATTING.md](README_FORMATTING.md) - Code formatting overview
-- [VERIFICATION_CHECKLIST.md](VERIFICATION_CHECKLIST.md) - QA checklist
-- [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md) - Full documentation index
-
----
-
-## ❓ FAQ
-
-**Q: How do I upload multiple documents?**  
-A: Upload one document at a time through the Streamlit interface. Each upload creates a new indexed collection.
-
-**Q: What's the maximum file size?**  
-A: Limited by system memory and Qdrant storage. Typical limit is 100MB per file.
-
-**Q: Can I use different LLM providers?**  
-A: Currently configured for OpenAI. You can modify `src/llms/openai.py` to use other providers.
-
-**Q: How is conversation history stored?**  
-A: MongoDB stores all chat messages with timestamps and session IDs for full context retention.
-
-**Q: Can I run this without web search?**  
-A: Yes, remove Tavily dependency. Queries will use index or general LLM only.
-
----
-
-
-## 🙏 Acknowledgments
-
-- Built with LangChain and LangGraph
-- Vector search powered by Qdrant
-- LLM capabilities by OpenAI
-- Web search by Tavily
-- UI powered by Streamlit
-- Thanks to the open-source community
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
--- Built with ❤️ by Dhruv Singhal
+Built with ❤️ using LangGraph, NVIDIA NIM, and FastAPI by Nithin

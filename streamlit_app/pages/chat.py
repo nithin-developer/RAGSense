@@ -8,7 +8,7 @@ from utils.api_client import query_backend, document_upload_rag
 
 
 st.set_page_config(
-    page_title="Adaptive RAG — Chat",
+    page_title="RAGSense — Chat",
     page_icon="🧠",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -48,7 +48,7 @@ username = st.session_state.get("username", "User")
 
 col_title, col_spacer, col_user, col_logout = st.columns([5, 2, 2, 2])
 with col_title:
-    st.markdown("### 🧠 Adaptive RAG Chat")
+    st.markdown("### 🧠 RAGSense Chat")
 # with col_user:
 with col_logout:
     st.markdown(f"👤 Logged in as **{username}**")

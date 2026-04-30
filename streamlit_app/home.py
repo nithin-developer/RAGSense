@@ -10,7 +10,7 @@ from utils.api_client import create_user, login_user, get_api_token
 
 
 st.set_page_config(
-    page_title="Adaptive RAG — Login",
+    page_title="RAGSense — Login",
     page_icon="🧠",
     layout="centered",
     initial_sidebar_state="collapsed",
@@ -67,7 +67,7 @@ st.markdown("")  # top spacing
 col_l, col_c, col_r = st.columns([1, 4, 1])
 with col_c:
     st.markdown(
-        "<h1 style='text-align:center; margin-bottom:0; max-width: 100%;'>🧠 Adaptive RAG</h1>",
+        "<h1 style='text-align:center; margin-bottom:0; max-width: 100%;'>🧠 RAGSense</h1>",
         unsafe_allow_html=True,
     )
     st.markdown(
@@ -150,4 +150,4 @@ with tab_signup:
 
 st.markdown("")
 st.divider()
-st.caption("Adaptive RAG · Built with FastAPI & LangGraph")
+st.caption("RAGSense · Built with FastAPI & LangGraph")

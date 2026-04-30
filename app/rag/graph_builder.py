@@ -1,5 +1,5 @@
 """
-Graph builder module for the adaptive RAG system.
+Graph builder module for the RAGSense system.
 """
 
 from langchain_community.tools import TavilySearchResults
