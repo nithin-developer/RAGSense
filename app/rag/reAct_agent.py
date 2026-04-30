@@ -4,7 +4,7 @@ ReAct agent setup for document retrieval and question answering.
 
 import os
 
-from langchain.agents import create_react_agent, AgentExecutor
+from langchain_classic.agents import AgentExecutor, create_react_agent
 from langchain_core.prompts import ChatPromptTemplate
 
 from app.config.settings import Config

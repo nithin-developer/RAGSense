@@ -4,15 +4,26 @@ Retriever setup and vector store configuration.
 
 import os
 
+from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain_core.tools import create_retriever_tool
-from langchain_openai import OpenAIEmbeddings
+from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
 # from langchain_qdrant import QdrantVectorStore
 from langchain_community.vectorstores import FAISS
 
 from app.core.config import settings
 
-embeddings = OpenAIEmbeddings()
+load_dotenv()
+
+NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "")
+
+# NVIDIAEmbeddings automatically handles input_type="passage"/"query"
+# required by asymmetric models like nv-embedqa-e5-v5
+embeddings = NVIDIAEmbeddings(
+    model="nvidia/nv-embedqa-e5-v5",
+    api_key=NVIDIA_API_KEY,
+    truncate="NONE",
+)
 
 # Global variable to store the FAISS vectorstore instance
 # This ensures get_retriever() can access documents stored by retriever_chain()
