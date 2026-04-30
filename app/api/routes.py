@@ -2,7 +2,11 @@
 API routes for RAG operations.
 """
 
-from fastapi import APIRouter, UploadFile, File, Header
+import asyncio
+import logging
+from functools import partial
+
+from fastapi import APIRouter, HTTPException, UploadFile, File, Header
 from langchain_core.messages import HumanMessage, AIMessage
 
 from app.memory.chat_history_mongo import ChatHistory
@@ -11,6 +15,7 @@ from app.rag.document_upload import documents
 from app.rag.graph_builder import builder
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.post("/rag/query")
@@ -24,20 +29,15 @@ async def rag_query(req: QueryRequest):
     Returns:
         The generated response from the RAG pipeline.
     """
-    #chat_history=ChatInMemoryHistory.get_session_history(req.token)
     chat_history = ChatHistory.get_session_history(req.session_id)
     await chat_history.add_message(HumanMessage(content=req.query))
 
-    # Fetch full history
     messages = await chat_history.get_messages()
-    result = builder.invoke({
-        "messages": messages
-    })
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(None, partial(builder.invoke, {"messages": messages}))
     output_text = result["messages"][-1].content
 
-    # Save assistant message
     await chat_history.add_message(AIMessage(content=output_text))
-
     return {"result": result["messages"][-1]}
 
 
@@ -56,6 +56,20 @@ async def upload_file(
     Returns:
         Upload status.
     """
-    status_upload = documents(description, file)
+    # Read file bytes in async context before handing off to thread
+    file_bytes = await file.read()
+    file.file.seek(0)  # reset so documents() can read again if needed
+
+    try:
+        loop = asyncio.get_event_loop()
+        status_upload = await loop.run_in_executor(
+            None, partial(documents, description, file)
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("Document upload failed: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
     return {"status": status_upload}
 

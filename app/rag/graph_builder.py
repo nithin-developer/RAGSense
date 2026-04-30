@@ -34,7 +34,7 @@ def query_classifier(state: State):
     question = state["messages"][-1].content
     retriever = get_retriever()
     context = retriever.invoke(question)
-    print("docs received from Qdrant")
+    print("docs received from FAISS retriever")
     print(context)
 
     llm_with_structured_output = llm.with_structured_output(RouteIdentifier)

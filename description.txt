@@ -1,0 +1,2 @@
+**Tool Instruction:**
+This tool is designed to answer questions **only** about the uploaded **PneumoScan Report**, which contains the results of a pneumonia test. Do not use it for any other queries outside this document's content.
