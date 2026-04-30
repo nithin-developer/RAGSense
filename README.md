@@ -48,7 +48,7 @@ The system classifies each query and routes it to the best pipeline — indexed 
 
 ## Architecture
 
-![App Architecture](./App_Architecture.png) size: 800x600
+![App Architecture](./App_Architecture.png)
 
 
 ### Graph Nodes
