@@ -9,9 +9,8 @@ import requests
 
 logger = logging.getLogger(__name__)
 
-# Backend service URLs
-RUST_BASE_URL = "http://localhost:8080/api"
-PYTHON_BASE_URL = "http://127.0.0.1:8000"
+# Backend service URL (FastAPI on port 8000)
+BASE_URL = "http://127.0.0.1:8000"
 
 
 def create_user(username: str, password: str, api_token: str) -> bool:
@@ -34,7 +33,7 @@ def create_user(username: str, password: str, api_token: str) -> bool:
 
     try:
         response = requests.post(
-            f"{RUST_BASE_URL}/create_user",
+            f"{BASE_URL}/api/create_user",
             json={"username": username, "password": password},
             headers=headers,
         )
@@ -77,11 +76,11 @@ def login_user(username: str, password: str, api_token: str) -> dict:
         "Content-Type": "application/json"
     }
     response = requests.post(
-        f"{RUST_BASE_URL}/login",
+        f"{BASE_URL}/api/login",
         json={"username": username, "password": password},
         headers=headers,
     )
-    logger.info("Calling /login, status code: %s", response.json())
+    logger.info("Calling /login, status code: %s", response.status_code)
 
     if response.status_code == 200:
         return response.json()
@@ -96,11 +95,15 @@ def get_api_token() -> str:
     Returns:
         API token string if successful, None otherwise.
     """
-    response = requests.post(f"{RUST_BASE_URL}/init")
-    logger.info("Calling /init, status code: %s", response.json())
+    response = requests.post(f"{BASE_URL}/api/init")
+    logger.info("Calling /api/init, status code: %s, body: %s", response.status_code, response.text)
 
     if response.status_code == 200:
-        return response.json()["api_token"]
+        try:
+            return response.json()["api_token"]
+        except (ValueError, KeyError) as e:
+            logger.error("Failed to parse /init response: %s", e)
+            return None
 
     return None
 
@@ -116,7 +119,7 @@ def query_backend(query: str, session_id: str) -> str:
     Returns:
         Response text from the backend or error message.
     """
-    url = f"{PYTHON_BASE_URL}/rag/query"
+    url = f"{BASE_URL}/rag/query"
     print(f"[query_backend] Calling: {url}")
 
     response = requests.post(
@@ -145,7 +148,7 @@ def document_upload_rag(file, description: str) -> bool:
     headers = {
         "X-Description": description
     }
-    url = f"{PYTHON_BASE_URL}/rag/documents/upload"
+    url = f"{BASE_URL}/rag/documents/upload"
 
     if file:
         files = {"file": (file.name, file, file.type)}
